@@ -11,6 +11,7 @@ import processing.serial.*;
 //#######################################
 //                Variables
 //#######################################
+// Test
 //Dohyo
 int dohyoX = 1200;
 int dohyoY = 400;
