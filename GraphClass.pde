@@ -60,20 +60,21 @@
     
         fill(BackgroundColor); color(0);stroke(StrokeColor);strokeWeight(1);
         int t=60;
-        
-        rect(xPos-t*1.6,yPos-t,Width+t*2.5,Height+t*2);            // outline
+       
+        rect(xPos+Width/2-50,yPos+Height/2,Width+t*2.5,Height+t*2);            // outline
         textAlign(CENTER);textSize(18);
         float c=textWidth(Title);
         fill(BackgroundColor); color(0);stroke(0);strokeWeight(1);
-        rect(xPos+Width/2-c/2,yPos-35,c,0);                         // Heading Rectangle  
-        
+        //rect(xPos+Width/2-c/2,yPos-35,c,0);                         // Heading Rectangle  
+        //rect(xPos+35,yPos-35,500,500);                         // Heading Rectangle  
+
         fill(0);
         text(Title,xPos+Width/2,yPos-37);                            // Heading Title
         textAlign(CENTER);textSize(14);
         text(xLabel,xPos+Width/2,yPos+Height+t/1.5);                     // x-axis Label 
         
         rotate(-PI/2);                                               // rotate -90 degrees
-        text(yLabel,-yPos-Height/2,xPos-t*1.6+20);                   // y-axis Label  
+        text(yLabel,-yPos-Height/2,xPos-t*1.6+50);                   // y-axis Label  
         rotate(PI/2);                                                // rotate back
         
         textSize(10); noFill(); stroke(0); smooth();strokeWeight(1);

@@ -4,6 +4,10 @@
  
  Created by:
  Oskar Persson
+
+For the line graphs, RealtimePlotter by Sebastian Nilsson was used.
+https://github.com/sebnil/RealtimePlotter
+
  */
 
 // import libraries
@@ -56,7 +60,7 @@ ControlP5 cp5;
 JSONObject plotterConfigJSON;
 
 // plots
-Graph LineGraph = new Graph(225, 600, 600, 200, color (20, 20, 200));
+Graph LineGraph = new Graph(250, 600, 600, 300, color (20, 20, 200));
 float[][] lineGraphValues = new float[6][100];
 float[] lineGraphSampleNumbers = new float[100];
 color[] graphColors = new color[6];
@@ -123,27 +127,12 @@ void setup() {
   f = createFont("Times New Roman", 32);
   textFont(f);
 
-  // build the gui
+  // build the gui for bottom Line Graph
   int x = 170;
   int y = 60;
-  cp5.addTextfield("lgMaxY").setPosition(x, y=y+130).setText(getPlotterConfigString("lgMaxY")).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("lgMinY").setPosition(x, y=y+200).setText(getPlotterConfigString("lgMinY")).setWidth(40).setAutoClear(false);
-/*
-  cp5.addTextlabel("on/off2").setText("on/off").setPosition(x=13, y=20).setColor(0);
-  cp5.addTextlabel("multipliers2").setText("multipliers").setPosition(x=55, y).setColor(0);
-  cp5.addTextfield("bcMultiplier1").setPosition(x=60, y=30).setText(getPlotterConfigString("bcMultiplier1")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("bcMultiplier2").setPosition(x, y=y+40).setText(getPlotterConfigString("bcMultiplier2")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("bcMultiplier3").setPosition(x, y=y+40).setText(getPlotterConfigString("bcMultiplier3")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("bcMultiplier4").setPosition(x, y=y+40).setText(getPlotterConfigString("bcMultiplier4")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("bcMultiplier5").setPosition(x, y=y+40).setText(getPlotterConfigString("bcMultiplier5")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("bcMultiplier6").setPosition(x, y=y+40).setText(getPlotterConfigString("bcMultiplier6")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addToggle("bcVisible1").setPosition(x=x-50, y=30).setValue(int(getPlotterConfigString("bcVisible1"))).setMode(ControlP5.SWITCH);
-  cp5.addToggle("bcVisible2").setPosition(x, y=y+40).setValue(int(getPlotterConfigString("bcVisible2"))).setMode(ControlP5.SWITCH);
-  cp5.addToggle("bcVisible3").setPosition(x, y=y+40).setValue(int(getPlotterConfigString("bcVisible3"))).setMode(ControlP5.SWITCH);
-  cp5.addToggle("bcVisible4").setPosition(x, y=y+40).setValue(int(getPlotterConfigString("bcVisible4"))).setMode(ControlP5.SWITCH);
-  cp5.addToggle("bcVisible5").setPosition(x, y=y+40).setValue(int(getPlotterConfigString("bcVisible5"))).setMode(ControlP5.SWITCH);
-  cp5.addToggle("bcVisible6").setPosition(x, y=y+40).setValue(int(getPlotterConfigString("bcVisible6"))).setMode(ControlP5.SWITCH);
-*/
+  cp5.addTextfield("lgMaxY").setPosition(x, y+500).setText(getPlotterConfigString("lgMaxY")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
+  cp5.addTextfield("lgMinY").setPosition(x, y+850).setText(getPlotterConfigString("lgMinY")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
+
   cp5.addTextlabel("label").setText("on/off").setPosition(x=13, y=y+90).setColor(0);
   cp5.addTextlabel("multipliers").setText("multipliers").setPosition(x=55, y).setColor(0);
   cp5.addTextfield("lgMultiplier1").setPosition(x=60, y=y+10).setText(getPlotterConfigString("lgMultiplier1")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
@@ -227,6 +216,10 @@ void draw() {
 
   enemy(posX, posY, angle, attackZone);
   miniSumo(posX, posY, angle);
+
+  //Debugg circle
+  fill(200,102,0);
+  ellipse(250,600,10,10);
 
  // showData();
   //sumoSensors(attackZone);

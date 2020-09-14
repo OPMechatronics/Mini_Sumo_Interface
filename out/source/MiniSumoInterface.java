@@ -25,6 +25,10 @@ public class MiniSumoInterface extends PApplet {
  
  Created by:
  Oskar Persson
+
+For the line graphs, RealtimePlotter by Sebastian Nilsson was used.
+https://github.com/sebnil/RealtimePlotter
+
  */
 
 // import libraries
@@ -77,7 +81,7 @@ ControlP5 cp5;
 JSONObject plotterConfigJSON;
 
 // plots
-Graph LineGraph = new Graph(225, 600, 600, 200, color (20, 20, 200));
+Graph LineGraph = new Graph(250, 600, 600, 300, color (20, 20, 200));
 float[][] lineGraphValues = new float[6][100];
 float[] lineGraphSampleNumbers = new float[100];
 int[] graphColors = new int[6];
@@ -147,8 +151,8 @@ public void setup() {
   // build the gui
   int x = 170;
   int y = 60;
-  cp5.addTextfield("lgMaxY").setPosition(x, y=y+130).setText(getPlotterConfigString("lgMaxY")).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("lgMinY").setPosition(x, y=y+200).setText(getPlotterConfigString("lgMinY")).setWidth(40).setAutoClear(false);
+  cp5.addTextfield("lgMaxY").setPosition(x, y+500).setText(getPlotterConfigString("lgMaxY")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
+  cp5.addTextfield("lgMinY").setPosition(x, y+850).setText(getPlotterConfigString("lgMinY")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
 /*
   cp5.addTextlabel("on/off2").setText("on/off").setPosition(x=13, y=20).setColor(0);
   cp5.addTextlabel("multipliers2").setText("multipliers").setPosition(x=55, y).setColor(0);
@@ -218,7 +222,7 @@ public void draw() {
       }
     }
 
-    // build the arrays for bar charts and line graphs
+    // build the arrays for line graphs
     int barchartIndex = 0;
     for (i=0; i<nums.length; i++) {
 
@@ -249,9 +253,13 @@ public void draw() {
   enemy(posX, posY, angle, attackZone);
   miniSumo(posX, posY, angle);
 
-  showData();
+  //Debugg circle
+  fill(200,102,0);
+  ellipse(250,600,10,10);
+
+ // showData();
   //sumoSensors(attackZone);
-  showParsedData();
+ // showParsedData();
 }
 
 public void serialEvent(Serial p) { 
@@ -728,20 +736,21 @@ public void showParsedData() {
     
         fill(BackgroundColor); color(0);stroke(StrokeColor);strokeWeight(1);
         int t=60;
-        
-        rect(xPos-t*1.6f,yPos-t,Width+t*2.5f,Height+t*2);            // outline
+       
+        rect(xPos+Width/2-50,yPos+Height/2,Width+t*2.5f,Height+t*2);            // outline
         textAlign(CENTER);textSize(18);
         float c=textWidth(Title);
         fill(BackgroundColor); color(0);stroke(0);strokeWeight(1);
-        rect(xPos+Width/2-c/2,yPos-35,c,0);                         // Heading Rectangle  
-        
+        //rect(xPos+Width/2-c/2,yPos-35,c,0);                         // Heading Rectangle  
+        //rect(xPos+35,yPos-35,500,500);                         // Heading Rectangle  
+
         fill(0);
         text(Title,xPos+Width/2,yPos-37);                            // Heading Title
         textAlign(CENTER);textSize(14);
         text(xLabel,xPos+Width/2,yPos+Height+t/1.5f);                     // x-axis Label 
         
         rotate(-PI/2);                                               // rotate -90 degrees
-        text(yLabel,-yPos-Height/2,xPos-t*1.6f+20);                   // y-axis Label  
+        text(yLabel,-yPos-Height/2,xPos-t*1.6f+50);                   // y-axis Label  
         rotate(PI/2);                                                // rotate back
         
         textSize(10); noFill(); stroke(0); smooth();strokeWeight(1);
