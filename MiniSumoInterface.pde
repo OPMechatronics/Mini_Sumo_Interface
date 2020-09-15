@@ -1,11 +1,11 @@
 /** //<>// //<>//
  *Mini Sumo Interface
- Rev000
+ Rev001
  
  Created by:
  Oskar Persson
 
-For the line graphs, RealtimePlotter by Sebastian Nilsson was used.
+For the line graph, RealtimePlotter by Sebastian Nilsson was used.
 https://github.com/sebnil/RealtimePlotter
 
  */
@@ -32,12 +32,11 @@ int sumoSensorSize = 300;
 int sensorLength = 200;
 int sensorWidth = 30;
 
-//Text
-PFont f;
-int colA = 100;
-int colB = 500;
-int rowA = 100;
-int rowB = 150;
+//Text position
+int colA = 1200;
+int colB = 1500;
+int rowA = 60;
+int rowB = 110;
 int rowC = 200;
 
 //Data/Input
@@ -60,7 +59,9 @@ ControlP5 cp5;
 JSONObject plotterConfigJSON;
 
 // plots
-Graph LineGraph = new Graph(250, 600, 600, 300, color (20, 20, 200));
+int LineGraphX1 = 250;
+int LineGraphY1 = 600;
+Graph LineGraph = new Graph(LineGraphX1, LineGraphY1, 660, 300, color (20, 20, 200));
 float[][] lineGraphValues = new float[6][100];
 float[] lineGraphSampleNumbers = new float[100];
 color[] graphColors = new color[6];
@@ -101,7 +102,7 @@ void setup() {
   // init charts
   setChartSettings();
   
-  // build x axis values for the line graph
+  // build x1 axis values for the line graph
   for (int i=0; i<lineGraphValues.length; i++) {
     for (int k=0; k<lineGraphValues[0].length; k++) {
       lineGraphValues[i][k] = 0;
@@ -110,7 +111,7 @@ void setup() {
     }
   }
   // start serial communication
-  String serialPortName = "COM4"; //COM4 is the Bluetooth serial port on my PC
+  String serialPortName = "COM4"; //COM4 is the Bluetooth serial port on my PC, yours may be different
   
   if (!mockupSerial) {
     //String serialPortName = Serial.list()[3];
@@ -124,29 +125,37 @@ void setup() {
 
   // Create the font
   //printArray(PFont.list()); //prints a list of all available fonts
-  f = createFont("Times New Roman", 32);
+  PFont f = createFont("arial bold", 32);
+  PFont font = createFont("arial bold",15);
   textFont(f);
+  cp5.setFont(font);
 
   // build the gui for bottom Line Graph
-  int x = 170;
-  int y = 60;
-  cp5.addTextfield("lgMaxY").setPosition(x, y+500).setText(getPlotterConfigString("lgMaxY")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("lgMinY").setPosition(x, y+850).setText(getPlotterConfigString("lgMinY")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
+  int x1 = LineGraphX1 - 240;
+  int y1 = LineGraphY1 - 40;
+  cp5.addTextfield("lgMaxY").setPosition(x1+160, y1-10).setText(getPlotterConfigString("lgMaxY")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false).setCaptionLabel("Max");
+  cp5.addTextfield("lgMinY").setPosition(x1+160, y1+350).setText(getPlotterConfigString("lgMinY")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false).setCaptionLabel("Min");
 
-  cp5.addTextlabel("label").setText("on/off").setPosition(x=13, y=y+90).setColor(0);
-  cp5.addTextlabel("multipliers").setText("multipliers").setPosition(x=55, y).setColor(0);
-  cp5.addTextfield("lgMultiplier1").setPosition(x=60, y=y+10).setText(getPlotterConfigString("lgMultiplier1")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("lgMultiplier2").setPosition(x, y=y+40).setText(getPlotterConfigString("lgMultiplier2")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("lgMultiplier3").setPosition(x, y=y+40).setText(getPlotterConfigString("lgMultiplier3")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("lgMultiplier4").setPosition(x, y=y+40).setText(getPlotterConfigString("lgMultiplier4")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("lgMultiplier5").setPosition(x, y=y+40).setText(getPlotterConfigString("lgMultiplier5")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addTextfield("lgMultiplier6").setPosition(x, y=y+40).setText(getPlotterConfigString("lgMultiplier6")).setColorCaptionLabel(0).setWidth(40).setAutoClear(false);
-  cp5.addToggle("lgVisible1").setPosition(x=x-50, y=330).setValue(int(getPlotterConfigString("lgVisible1"))).setMode(ControlP5.SWITCH).setColorActive(graphColors[0]);
-  cp5.addToggle("lgVisible2").setPosition(x, y=y+40).setValue(int(getPlotterConfigString("lgVisible2"))).setMode(ControlP5.SWITCH).setColorActive(graphColors[1]);
-  cp5.addToggle("lgVisible3").setPosition(x, y=y+40).setValue(int(getPlotterConfigString("lgVisible3"))).setMode(ControlP5.SWITCH).setColorActive(graphColors[2]);
-  cp5.addToggle("lgVisible4").setPosition(x, y=y+40).setValue(int(getPlotterConfigString("lgVisible4"))).setMode(ControlP5.SWITCH).setColorActive(graphColors[3]);
-  cp5.addToggle("lgVisible5").setPosition(x, y=y+40).setValue(int(getPlotterConfigString("lgVisible5"))).setMode(ControlP5.SWITCH).setColorActive(graphColors[4]);
-  cp5.addToggle("lgVisible6").setPosition(x, y=y+40).setValue(int(getPlotterConfigString("lgVisible6"))).setMode(ControlP5.SWITCH).setColorActive(graphColors[5]);
+  cp5.addTextlabel("label").setText("On/Off").setPosition(x1=x1-5, y1).setColor(0);
+  cp5.addTextlabel("multipliers").setText("Scale").setPosition(x1=x1+53, y1).setColor(0);
+  cp5.addTextfield("lgMultiplier1").setPosition(x1=x1+2, y1=y1+40).setText(getPlotterConfigString("lgMultiplier1")).setWidth(40).setAutoClear(false).setCaptionLabel("");
+  cp5.addTextfield("lgMultiplier2").setPosition(x1, y1=y1+60).setText(getPlotterConfigString("lgMultiplier2")).setWidth(40).setAutoClear(false).setCaptionLabel("");
+  cp5.addTextfield("lgMultiplier3").setPosition(x1, y1=y1+60).setText(getPlotterConfigString("lgMultiplier3")).setWidth(40).setAutoClear(false).setCaptionLabel("");
+  cp5.addTextfield("lgMultiplier4").setPosition(x1, y1=y1+60).setText(getPlotterConfigString("lgMultiplier4")).setWidth(40).setAutoClear(false).setCaptionLabel("");
+  cp5.addTextfield("lgMultiplier5").setPosition(x1, y1=y1+60).setText(getPlotterConfigString("lgMultiplier5")).setWidth(40).setAutoClear(false).setCaptionLabel("");
+  cp5.addTextfield("lgMultiplier6").setPosition(x1, y1=y1+60).setText(getPlotterConfigString("lgMultiplier6")).setWidth(40).setAutoClear(false).setCaptionLabel("");
+  cp5.addToggle("lgVisible1").setPosition(x1=x1-50, y1=y1-300).setValue(int(getPlotterConfigString("lgVisible1"))).setColorCaptionLabel(0).
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[0]).setCaptionLabel("Signal 1");
+  cp5.addToggle("lgVisible2").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible2"))).setColorCaptionLabel(0).
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[1]).setCaptionLabel("Signal 2");
+  cp5.addToggle("lgVisible3").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible3"))).setColorCaptionLabel(0).
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[2]).setCaptionLabel("Signal 3");
+  cp5.addToggle("lgVisible4").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible4"))).setColorCaptionLabel(0).
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[3]).setCaptionLabel("Signal 4");
+  cp5.addToggle("lgVisible5").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible5"))).setColorCaptionLabel(0).
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[4]).setCaptionLabel("Signal 5");
+  cp5.addToggle("lgVisible6").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible6"))).setColorCaptionLabel(0).
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[5]).setCaptionLabel("Signal 6");
 }
 
 // ================================================================
@@ -221,8 +230,8 @@ void draw() {
   fill(200,102,0);
   ellipse(250,600,10,10);
 
- // showData();
-  //sumoSensors(attackZone);
+  showData();
+  sumoSensors(attackZone);
  // showParsedData();
 }
 
@@ -246,6 +255,7 @@ void dohyo() {
 void showData() {
   textAlign(LEFT);
   fill(0);
+  textSize(32);
   // text("Angle: " + angle, colA, rowA); Orginal
   text("Angle: " + angle, colA, rowA);
   fill(0);
@@ -258,11 +268,11 @@ void showData() {
   //text("edgeTurnAngle: " + edgeTurnAngle, colA, rowC);
 }
 
-//Draws the mini sumo inside the dohyo att coordinates x,y
-void miniSumo(int x, int y, int dir) {
+//Draws the mini sumo inside the dohyo att coordinates x1,y1
+void miniSumo(int x1, int y1, int dir) {
   pushMatrix();
-  // negative y since the dohyo coordinates are invertet the window coordinates
-  translate(x + dohyoX, -y + dohyoY); 
+  // negative y1 since the dohyo coordinates are invertet the window coordinates
+  translate(x1 + dohyoX, -y1 + dohyoY); 
   rotate(radians(-dir));
   rectMode(CENTER);
   fill(sumoColor);
@@ -317,46 +327,49 @@ String getPlotterConfigString(String id) {
 void sumoSensors (int zone) {
   rectMode(CENTER);
   fill(sumoSensorColor);
-  rect(0.25 * width, 0.75 * height, sumoSensorSize, sumoSensorSize);
+  float sensorPosX = 0.25 * width;
+  float sensorPosY = 0.35 * height;
+
+  rect(sensorPosX, sensorPosY, sumoSensorSize, sumoSensorSize);
 
   //draws the sensor vision cones
-  float tx1S1 = (0.25 * width) - sumoSensorSize/2;
-  float ty1S1 = 0.75 * height;
+  float tx1S1 = sensorPosX - sumoSensorSize/2;
+  float ty1S1 = sensorPosY;
   float tx2S1 = tx1S1 - sensorLength;
   float ty2S1 = ty1S1 + sensorWidth/2;
   float tx3S1 = tx2S1;
   float ty3S1 = ty2S1 - sensorWidth;
 
-  float tx1S2 = (0.25 * width) - 0.4 * sumoSensorSize;
-  float ty1S2 = 0.75 * height - sumoSensorSize/2;
+  float tx1S2 = sensorPosX - 0.4 * sumoSensorSize;
+  float ty1S2 = sensorPosY - sumoSensorSize/2;
   float tx2S2 = tx1S2 - sensorWidth/2;
   float ty2S2 = ty1S2 - sensorLength;
   float tx3S2 = tx2S2 + sensorWidth;
   float ty3S2 = ty2S2;
 
-  float tx1S3 = (0.25 * width) - 0.1 * sumoSensorSize;
-  float ty1S3 = 0.75 * height - sumoSensorSize/2;
+  float tx1S3 = sensorPosX - 0.1 * sumoSensorSize;
+  float ty1S3 = sensorPosY - sumoSensorSize/2;
   float tx2S3 = tx1S3 + 0.7071 * (sensorLength + 80);
   float ty2S3 = ty1S3 - 0.7071 * (sensorLength + 80);
   float tx3S3 = tx2S3 + sensorWidth;
   float ty3S3 = ty2S3;
 
-  float tx1S4 = (0.25 * width) + 0.1 * sumoSensorSize;
-  float ty1S4 = 0.75 * height - sumoSensorSize/2;
+  float tx1S4 = sensorPosX + 0.1 * sumoSensorSize;
+  float ty1S4 = sensorPosY - sumoSensorSize/2;
   float tx2S4 = tx1S4 - 0.7071 * (sensorLength + 80);
   float ty2S4 = ty1S4 - 0.7071 * (sensorLength + 80);
   float tx3S4 = tx2S4 - sensorWidth;
   float ty3S4 = ty2S4;
 
-  float tx1S5 = (0.25 * width) + 0.4 * sumoSensorSize;
-  float ty1S5 = 0.75 * height - sumoSensorSize/2;
+  float tx1S5 = sensorPosX + 0.4 * sumoSensorSize;
+  float ty1S5 = sensorPosY - sumoSensorSize/2;
   float tx2S5 = tx1S5 - sensorWidth/2;
   float ty2S5 = ty1S5 - sensorLength;
   float tx3S5 = tx2S5 + sensorWidth;
   float ty3S5 = ty2S5;  
 
-  float tx1S6 = (0.25 * width) + sumoSensorSize/2;
-  float ty1S6 = 0.75 * height;
+  float tx1S6 = sensorPosX + sumoSensorSize/2;
+  float ty1S6 = sensorPosY;
   float tx2S6 = tx1S6 + sensorLength;
   float ty2S6 = ty1S6 + sensorWidth/2;
   float tx3S6 = tx2S6;
@@ -495,7 +508,7 @@ void sumoSensors (int zone) {
   }
 }
 
-void enemy(int x, int y, int dir, int attack) {
+void enemy(int x1, int y1, int dir, int attack) {
 
   switch(attack) {
   case 0:
@@ -503,8 +516,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 1:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(0, -200, sumoSize, sumoSize);
@@ -512,8 +525,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 2:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(200, -200, sumoSize, sumoSize);
@@ -521,8 +534,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 3:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(200, -100, sumoSize, sumoSize);
@@ -530,8 +543,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 4:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(200, 100, sumoSize, sumoSize);
@@ -539,8 +552,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 5:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(200, 200, sumoSize, sumoSize);
@@ -548,8 +561,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 6:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(0, 200, sumoSize, sumoSize);
@@ -557,8 +570,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 7:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(150, -150, sumoSize, sumoSize);
@@ -566,8 +579,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 8:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(150, 0, sumoSize, sumoSize);
@@ -575,8 +588,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 9:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(150, 150, sumoSize, sumoSize);
@@ -584,8 +597,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 10:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(100, -50, sumoSize, sumoSize);
@@ -593,8 +606,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 11:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(100, 50, sumoSize, sumoSize);
@@ -602,8 +615,8 @@ void enemy(int x, int y, int dir, int attack) {
     break;
   case 12:
     pushMatrix();
-    // negative y since the dohyo coordinates are invertet the window coordinates
-    translate(x + dohyoX, -y + dohyoY); 
+    // negative y1 since the dohyo coordinates are invertet the window coordinates
+    translate(x1 + dohyoX, -y1 + dohyoY); 
     rotate(radians(-dir));
     fill(enemyColor);
     ellipse(75, 0, sumoSize, sumoSize);
