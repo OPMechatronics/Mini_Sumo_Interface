@@ -4,9 +4,10 @@ void convertBtData(String[] input){
   attackZone = int(input[1]);
   posX = int(input[2]);
   posY = int(input[3]);
-  speed = int(input[4]);
-  totalDistX = int(input[5]);
+  speedLeft = int(input[4]);
+  speedRight = int(input[5]);
   edgeTurnAngle = int(input[6]);
+  pidOutput = int(input[7]);
 }
 
 void showParsedData() {
@@ -18,10 +19,12 @@ void showParsedData() {
     println(posX);
     print("posY ");
     println(posY);
-    print("speed ");
-    println(speed);
-    print("totalDistX ");
-    println(totalDistX);
+    print("speedLeft ");
+    println(speedLeft);
+    print("speedRight ");
+    println(speedRight);
     print("edgeTurnAngle ");
     println(edgeTurnAngle);
+    print("pidOutput ");
+    println(pidOutput);
 }

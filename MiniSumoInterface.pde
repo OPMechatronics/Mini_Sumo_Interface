@@ -41,13 +41,15 @@ int rowC = 200;
 
 //Data/Input
 int angle = 0;
-int speed = 0;
+int speedLeft = 0;
+int speedRight = 0;
 int posX = 185;
 int posY = 0;
 int attackZone = 0;
 int edgeDetect = 0;
 int totalDistX = 0;
 int edgeTurnAngle = 0;
+int pidOutput = 0;
 
 int dataDelay = 100;
 int dataLastTime = 0;
@@ -72,7 +74,8 @@ String topSketchPath = "";
 //Bluetooth
 Serial serialPort;  // The serial port
 String btData;
-String[] nums = new String[7]; //Expecting 7 input data
+String[] parsedBTData = new String[8]; //Expecting 8 input data
+String[] nums = new String[6]; //6 lines in line graph
 
 // If you want to debug the plotter without using a real serial port set this to true
 boolean mockupSerial = false;
@@ -146,24 +149,24 @@ void setup() {
   cp5.addTextfield("lgMultiplier5").setPosition(x1, y1=y1+60).setText(getPlotterConfigString("lgMultiplier5")).setWidth(40).setAutoClear(false).setCaptionLabel("");
   cp5.addTextfield("lgMultiplier6").setPosition(x1, y1=y1+60).setText(getPlotterConfigString("lgMultiplier6")).setWidth(40).setAutoClear(false).setCaptionLabel("");
   cp5.addToggle("lgVisible1").setPosition(x1=x1-50, y1=y1-300).setValue(int(getPlotterConfigString("lgVisible1"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[0]).setCaptionLabel("ANGLE");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[0]).setCaptionLabel("SPEED LEFT");
   cp5.addToggle("lgVisible2").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible2"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[1]).setCaptionLabel("ATTACK ZONE");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[1]).setCaptionLabel("SPEED RIGHT");
   cp5.addToggle("lgVisible3").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible3"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[2]).setCaptionLabel("POS X");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[2]).setCaptionLabel("PID OUTPUT");
   cp5.addToggle("lgVisible4").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible4"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[3]).setCaptionLabel("POS Y");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[3]).setCaptionLabel("SIGNAL 1");
   cp5.addToggle("lgVisible5").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible5"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[4]).setCaptionLabel("SPEED LEFT");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[4]).setCaptionLabel("SIGNAL 2");
   cp5.addToggle("lgVisible6").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible6"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[5]).setCaptionLabel("SPEED RIGHT");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[5]).setCaptionLabel("SIGNAL 3");
 }
 
 // ================================================================
 // ===                    ---- MAIN ----                        ===
 // ================================================================
 
-byte[] inBuffer = new byte[100]; // holds serial message
+//byte[] inBuffer = new byte[100]; // holds serial message
 int i = 0; // loop variable
 void draw() {
   background(123);
@@ -184,7 +187,6 @@ void draw() {
   }
 
   // build the arrays for line graphs
-  int barchartIndex = 0;
   for (i=0; i<nums.length; i++) {
 
     // update line graph
@@ -225,8 +227,11 @@ void draw() {
 void serialEvent(Serial p) { 
   btData = p.readString();
   // split the string at delimiter (,)
-  nums = split(btData, ",");
-  convertBtData(nums);
+  parsedBTData = split(btData, ",");
+  convertBtData(parsedBTData);
+  nums[0] = parsedBTData[4];  //speed left
+  nums[1] = parsedBTData[5];  //speed right
+  nums[2] = parsedBTData[7];  //pidoutput
 }
 
 //Draws the Dohyo
@@ -246,7 +251,7 @@ void showData() {
   textSize(32);
   text("Angle: " + angle, colA, rowA);
   fill(0);
-  text("Speed: " + speed, colA, rowB);
+  text("Turn Angle: " + edgeTurnAngle, colA, rowB);
   fill(0);
   text("PosX: " + posX, colB, rowA);
   fill(0);
