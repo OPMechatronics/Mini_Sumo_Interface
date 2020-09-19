@@ -68,13 +68,14 @@ color[] graphColors = new color[6];
 
 // helper for saving the executing path
 String topSketchPath = "";
+
 //Bluetooth
-Serial myPort;  // The serial port
+Serial serialPort;  // The serial port
 String btData;
-String[] btDataParse = new String[7]; //Expecting 7 input data
+String[] nums = new String[7]; //Expecting 7 input data
 
 // If you want to debug the plotter without using a real serial port set this to true
-boolean mockupSerial = true;
+boolean mockupSerial = false;
 
 // ================================================================
 // ===                ---- INITIAL SETUP ----                   ===
@@ -116,12 +117,12 @@ void setup() {
   if (!mockupSerial) {
     //String serialPortName = Serial.list()[3];
     //Open the port you are using at the rate you want:
-    myPort = new Serial(this, serialPortName, 115200);
-    myPort.bufferUntil(62); // Fills the buffer until it detects >, ASCII 62
-    myPort.clear();
+    serialPort = new Serial(this, serialPortName, 115200);
+    serialPort.bufferUntil(62); // Fills the buffer until it detects >, ASCII 62
+    serialPort.clear();
   }
   else
-    myPort = null;
+  serialPort = null;
 
   // Create the font
   //printArray(PFont.list()); //prints a list of all available fonts
@@ -145,17 +146,17 @@ void setup() {
   cp5.addTextfield("lgMultiplier5").setPosition(x1, y1=y1+60).setText(getPlotterConfigString("lgMultiplier5")).setWidth(40).setAutoClear(false).setCaptionLabel("");
   cp5.addTextfield("lgMultiplier6").setPosition(x1, y1=y1+60).setText(getPlotterConfigString("lgMultiplier6")).setWidth(40).setAutoClear(false).setCaptionLabel("");
   cp5.addToggle("lgVisible1").setPosition(x1=x1-50, y1=y1-300).setValue(int(getPlotterConfigString("lgVisible1"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[0]).setCaptionLabel("Signal 1");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[0]).setCaptionLabel("ANGLE");
   cp5.addToggle("lgVisible2").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible2"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[1]).setCaptionLabel("Signal 2");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[1]).setCaptionLabel("ATTACK ZONE");
   cp5.addToggle("lgVisible3").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible3"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[2]).setCaptionLabel("Signal 3");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[2]).setCaptionLabel("POS X");
   cp5.addToggle("lgVisible4").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible4"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[3]).setCaptionLabel("Signal 4");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[3]).setCaptionLabel("POS Y");
   cp5.addToggle("lgVisible5").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible5"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[4]).setCaptionLabel("Signal 5");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[4]).setCaptionLabel("SPEED LEFT");
   cp5.addToggle("lgVisible6").setPosition(x1, y1=y1+60).setValue(int(getPlotterConfigString("lgVisible6"))).setColorCaptionLabel(0).
-  setMode(ControlP5.SWITCH).setColorActive(graphColors[5]).setCaptionLabel("Signal 6");
+  setMode(ControlP5.SWITCH).setColorActive(graphColors[5]).setCaptionLabel("SPEED RIGHT");
 }
 
 // ================================================================
@@ -169,48 +170,34 @@ void draw() {
   line(960, 0, 960, height);
   dohyo();
 
-  /* Read serial and update values */
-  //Reading value doesn't work yet !!!!!!!!!!
-  if (mockupSerial || myPort.available() > 0) {
-    String myString = "";
-    if (!mockupSerial) {
-      try {
-        myPort.readBytesUntil('\r', inBuffer);
-      }
-      catch (Exception e) {
-      }
-      myString = new String(inBuffer);
+  //Gives the the line graph fake values
+  if (mockupSerial){
+    btData = mockupSerialFunction();
+    nums = split(btData, ",");
+  }
+  // count number of line graphs to hide
+  int numberOfInvisibleLineGraphs = 0;
+  for (i=0; i<6; i++) {
+    if (int(getPlotterConfigString("lgVisible"+(i+1))) == 0) {
+      numberOfInvisibleLineGraphs++;
     }
-    else {
-      myString = mockupSerialFunction();
-    }
-  // split the string at delimiter (space)
-    String[] nums = split(myString, ' ');
-    
-    // count number of line graphs to hide
-    int numberOfInvisibleLineGraphs = 0;
-    for (i=0; i<6; i++) {
-      if (int(getPlotterConfigString("lgVisible"+(i+1))) == 0) {
-        numberOfInvisibleLineGraphs++;
-      }
-    }
+  }
 
-    // build the arrays for line graphs
-    int barchartIndex = 0;
-    for (i=0; i<nums.length; i++) {
+  // build the arrays for line graphs
+  int barchartIndex = 0;
+  for (i=0; i<nums.length; i++) {
 
-      // update line graph
-      try {
-        if (i<lineGraphValues.length) {
-          for (int k=0; k<lineGraphValues[i].length-1; k++) {
-            lineGraphValues[i][k] = lineGraphValues[i][k+1];
-          }
-
-          lineGraphValues[i][lineGraphValues[i].length-1] = float(nums[i])*float(getPlotterConfigString("lgMultiplier"+(i+1)));
+    // update line graph
+    try {
+      if (i<lineGraphValues.length) {
+        for (int k=0; k<lineGraphValues[i].length-1; k++) {
+          lineGraphValues[i][k] = lineGraphValues[i][k+1];
         }
+
+        lineGraphValues[i][lineGraphValues[i].length-1] = float(nums[i])*float(getPlotterConfigString("lgMultiplier"+(i+1)));
       }
-      catch (Exception e) {
-      }
+    }
+    catch (Exception e) {
     }
   }
 
@@ -237,9 +224,10 @@ void draw() {
 
 void serialEvent(Serial p) { 
   btData = p.readString();
-  btDataParse = splitTokens(btData, ",");
-  convertBtData(btDataParse);
-} 
+  // split the string at delimiter (,)
+  nums = split(btData, ",");
+  convertBtData(nums);
+}
 
 //Draws the Dohyo
 void dohyo() {
@@ -256,7 +244,6 @@ void showData() {
   textAlign(LEFT);
   fill(0);
   textSize(32);
-  // text("Angle: " + angle, colA, rowA); Orginal
   text("Angle: " + angle, colA, rowA);
   fill(0);
   text("Speed: " + speed, colA, rowB);
@@ -264,12 +251,12 @@ void showData() {
   text("PosX: " + posX, colB, rowA);
   fill(0);
   text("PosY: " + posY, colB, rowB);
-  //fill(0);
-  //text("edgeTurnAngle: " + edgeTurnAngle, colA, rowC);
 }
 
 //Draws the mini sumo inside the dohyo att coordinates x1,y1
 void miniSumo(int x1, int y1, int dir) {
+  stroke(0);
+  strokeWeight(1);
   pushMatrix();
   // negative y1 since the dohyo coordinates are invertet the window coordinates
   translate(x1 + dohyoX, -y1 + dohyoY); 
@@ -327,6 +314,8 @@ String getPlotterConfigString(String id) {
 void sumoSensors (int zone) {
   rectMode(CENTER);
   fill(sumoSensorColor);
+  stroke(0);
+  strokeWeight(1);
   float sensorPosX = 0.25 * width;
   float sensorPosY = 0.35 * height;
 
@@ -509,7 +498,8 @@ void sumoSensors (int zone) {
 }
 
 void enemy(int x1, int y1, int dir, int attack) {
-
+  stroke(0);
+  strokeWeight(1);
   switch(attack) {
   case 0:
     dohyo();

@@ -12,22 +12,22 @@ String mockupSerialFunction() {
   for (int i = 0; i<6; i++) {
     switch (i) {
     case 0:
-      r += mockupValue+" ";
+      r += mockupValue+",";
       break;
     case 1:
-      r += 100*cos(mockupValue*(2*3.14)/1000)+" ";
+      r += 100*cos(mockupValue*(2*3.14)/1000)+",";
       break;
     case 2:
-      r += mockupValue/4+" ";
+      r += mockupValue/4+",";
       break;
     case 3:
-      r += mockupValue/8+" ";
+      r += mockupValue/8+",";
       break;
     case 4:
-      r += mockupValue/16+" ";
+      r += mockupValue/16+",";
       break;
     case 5:
-      r += mockupValue/32+" ";
+      r += mockupValue/32+",";
       break;
     }
     if (i < 7)
