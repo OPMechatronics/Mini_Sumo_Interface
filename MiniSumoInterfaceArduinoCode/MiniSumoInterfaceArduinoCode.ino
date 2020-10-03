@@ -1,7 +1,7 @@
-int value1 = 1;
-int value2 = 2;
-int value3 = 3;
-int value4 = 4;
+int angle = 1; //0-360
+int attackZone = 2; //0-12
+int posX = 3; //0-350
+int posY = 4; //0-350
 int value5 = 5;
 int value6 = 6;
 int value7 = 7;
@@ -20,13 +20,13 @@ void loop() {
 // Sends data from the robot over Bluetooth.
 //If you update what data to send make sure that the interface software is updated aswell.
 void updateSerial() {
-  Serial.print(value1);
+  Serial.print(angle);
   Serial.print(","); //Seperation mark
-  Serial.print(value2);
+  Serial.print(attackZone);
   Serial.print(",");  //Seperation mark
-  Serial.print(value3);
+  Serial.print(posX);
   Serial.print(",");  //Seperation mark
-  Serial.print(value4);
+  Serial.print(posY);
   Serial.print(",");  //Seperation mark   
   Serial.print(value5);
   Serial.print(",");  //Seperation mark
