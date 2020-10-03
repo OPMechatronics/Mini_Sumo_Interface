@@ -2,29 +2,17 @@
 
 A graphical interface for Mini Sumo robots, created with Processing.
 
-I'm using HC-05 Bluetooth module to send data from my Mini Sumo robot.\
-In the Arduino sketch for the robot it initialises the Bluetooth serial communication
-then it uses the function below to send data to the computer.\
-Note that not all variables that are sent are used in the code. But sometimes they are used for testing purposes. 
+I'm using a HC-05 Bluetooth module to send data from my Mini Sumo robot.
 
-```
-// Sends data from the robot over Bluetooth.
-//If you update what data to send make sure that the software that recives the data is updated aswell.
-void updateBT() {
-  BT.print(angleZdeg); //float
-  BT.print(","); //Seperation mark
-  BT.print(attackZone); //int
-  BT.print(",");  //Seperation mark
-  BT.print(sumoPosX); //float
-  BT.print(",");  //Seperation mark
-  BT.print(sumoPosY); //float
-  BT.print(",");  //Seperation mark   
-  BT.print(setAttackSpeed); //int
-  BT.print(",");  //Seperation mark
-  BT.print(totalDistX); //float
-  BT.print(",");  //Seperation mark
-  BT.print(edgeTurnAngle); // int
-  BT.print(",");  //Seperation mark
-  BT.print(">"); //END Mark
-}
-```
+The robot sends 8 variables. The first 4 values are:
+* Angle
+* AttackZone
+* PosX 
+* PosY
+
+They are needed to display the correct orientation, position and activated distance sensors.
+
+The last 4 are values I want to plot in the line graph.
+
+
+![Example of Interface](https://github.com/OPMechatronics/Mini_Sumo_Interface/blob/master/imgs/Example.JPG)
